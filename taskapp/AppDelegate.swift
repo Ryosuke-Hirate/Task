@@ -4,7 +4,7 @@
 //
 //  Created by 平手奈々 on 2016/08/17.
 //  Copyright © 2016年 ryosuke.hirate. All rights reserved.
-//
+//Thread1:signal SIGABRT
 
 import UIKit
 
@@ -16,7 +16,31 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
+        
+        let settings = UIUserNotificationSettings(forTypes: [UIUserNotificationType.Alert, UIUserNotificationType.Sound], categories: nil)
+        UIApplication.sharedApplication().registerUserNotificationSettings(settings)
+        
+        if let notification = launchOptions?[UIApplicationLaunchOptionsLocalNotificationKey] as? UILocalNotification {
+            application.cancelLocalNotification(notification)
+            
+        }
         return true
+    }
+    
+    func application(application: UIApplication, didReceiveLocalNotification notification: UILocalNotification){
+        if application.applicationState == UIApplicationState.Active {
+            
+            let alertController = UIAlertController(title: "時間になりました", message:notification.alertBody, preferredStyle: .Alert)
+            let defaultAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil)
+            alertController.addAction(defaultAction)
+            
+            window?.rootViewController!.presentViewController(alertController, animated: true, completion: nil)
+        } else {
+            
+           print("\(notification.alertBody)")
+        }
+        
+        application.cancelLocalNotification(notification)
     }
 
     func applicationWillResignActive(application: UIApplication) {
